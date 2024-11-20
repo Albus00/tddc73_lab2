@@ -1,7 +1,13 @@
 import { View, StyleSheet, Text, SafeAreaView, StatusBar, Image, Button, TextInput } from 'react-native';
+import React, { useState } from 'react';
 import card from '../assets/images/black-card.jpeg';
+import Dropdown from '../components/ui/dropdown';
+import styles from './styles';
 
 export default function HomeScreen() {
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
+
   return (
     <View style={{ width: '100%' }}>
       <StatusBar backgroundColor="#000" />
@@ -15,85 +21,34 @@ export default function HomeScreen() {
           </View>
         </View>
         <View style={styles.formContainer}>
-          <View style={styles.row}>
-            <Button
-              title="BUTTON"
-              color="gray" />
-            <Button
-              title="BUTTON"
-              color="gray" />
+          <View style={{ width: '100%' }}>
+            <Text style={styles.label}>Card Number</Text>
+            <TextInput style={styles.input} placeholder="1234 5678 9012 3456" keyboardType="numeric" />
+
+            <Text style={styles.label}>Card Name</Text>
+            <TextInput style={styles.input} placeholder="John Doe" />
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style={{ width: '60%' }}>
+                <Text style={styles.label}>Expiration Date</Text>
+                <View style={{ flexDirection: 'row', width: '50%' }}>
+                  {/* Dropdown component needs to be at 50% for some reason? */}
+                  <Dropdown valueArray={["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]} placeholder="MM" values={month} setValues={setMonth} />
+                  <Dropdown valueArray={["24", "25", "26", "27", "28"]} placeholder="YY" values={year} setValues={setYear} />
+                </View>
+              </View>
+
+              <View style={{ width: '40%' }}>
+                <Text style={styles.label}>CVV</Text>
+                <TextInput style={styles.input} placeholder="123" keyboardType="numeric" secureTextEntry={true} />
+              </View>
+            </View>
           </View>
-          <View style={styles.row}>
-            <Button
-              title="BUTTON"
-              color="gray" />
-            <Button
-              title="BUTTON"
-              color="gray" />
-          </View>
+
+          <Button title="Submit" onPress={() => { }} />
         </View>
 
-      </SafeAreaView>
-    </View>
+      </SafeAreaView >
+    </View >
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    height: '100%',
-    width: '100%',
-    backgroundColor: '#d4eafd',
-  },
-  centered: {
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  cardContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    alignItems: 'center',
-    marginTop: 20,
-    zIndex: 5,
-  },
-  card: {
-    width: 290,
-    height: 180,
-    borderRadius: 15,
-    elevation: 15,
-  },
-  formContainer: {
-    width: '90%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 30,
-    marginTop: 100,
-    paddingTop: 130,
-    backgroundColor: 'white',
-    borderRadius: 10,
-  },
-  gridContainer: {
-    width: '100%',
-    alignItems: 'center',
-    gap: 20,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '65%',
-  },
-  stepContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  textInput: {
-    width: '70%',
-    borderColor: 'red',
-    borderBottomWidth: 2,
-  },
-});
