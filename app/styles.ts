@@ -38,6 +38,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'monospace',
   },
+  cardNumberText: {
+    color: 'white',
+    fontSize: 22,
+    fontWeight: 'normal',
+    fontFamily: 'monospace',
+  },
+  focused: {
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+  },
   card: {
     width: 290,
     height: 180,
