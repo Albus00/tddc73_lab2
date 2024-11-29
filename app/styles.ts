@@ -32,11 +32,16 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
+  cardDetailsEntry: {
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+  },
   cardDetailsText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
     fontFamily: 'monospace',
+    alignSelf: 'flex-start',
   },
   cardNumberText: {
     color: 'white',
@@ -70,7 +75,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
     fontWeight: 'bold',
-    marginTop: 10,
   },
   input: {
     height: 50,

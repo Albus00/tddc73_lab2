@@ -8,6 +8,7 @@ interface props {
   placeholder: string;
   values: string | null | number;
   setValues: React.Dispatch<React.SetStateAction<string>>;
+  onFocus: () => void;
 }
 
 export default function Dropdown({
@@ -15,6 +16,7 @@ export default function Dropdown({
   placeholder,
   values,
   setValues,
+  onFocus,
 }: props) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState(
@@ -29,7 +31,7 @@ export default function Dropdown({
       open={open}
       value={values}
       items={items}
-      setOpen={setOpen}
+      setOpen={() => { setOpen(!open); onFocus(); }}
       setValue={setValues}
       setItems={setItems}
       style={[styles.input]}
