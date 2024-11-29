@@ -31,7 +31,7 @@ export default function Dropdown({
       open={open}
       value={values}
       items={items}
-      setOpen={() => { setOpen(!open); onFocus(); }}
+      setOpen={() => { setOpen(!open); onFocus(); }} // Added onFocus() behavior
       setValue={setValues}
       setItems={setItems}
       style={[styles.input]}
