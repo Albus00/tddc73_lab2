@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import card from '../assets/images/black-card.jpeg';
 import Dropdown from '../components/ui/dropdown';
 import styles from './styles';
+import getCardIcon from './cardIcons';
 
 export default function HomeScreen() {
   const [month, setMonth] = useState('MM');
@@ -137,20 +138,27 @@ export default function HomeScreen() {
           <Animated.View style={[styles.cardContainer, frontAnimatedStyle, { backfaceVisibility: 'hidden' }]}>
             <View style={[styles.centered, styles.card]}>
               <View style={styles.cardDetailsContainer}>
-                <View>
-                  <Text style={[styles.cardDetailsText]}>VISA</Text>
+                <View style={{ height: 40, width: 80, alignSelf: 'flex-end', }}>
+                  <Image source={getCardIcon(cardNumber)} style={{ width: '100%', height: '100%', objectFit: 'contain', alignSelf: 'flex-end' }} />
                 </View>
                 <View
                   style={[
-                    { marginTop: 20, flexDirection: 'row', gap: 5, },
+                    { marginTop: 0, flexDirection: 'row', gap: 5, },
                     styles.cardDetailsEntry,
                     numberIsFocused && styles.focused
                   ]}
                 >
                   <Text style={[styles.cardDetailsText, styles.cardNumberText]}>{cardNumber.slice(0, 4)}</Text>
-                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>{cardNumber.slice(5, 9)}</Text>
-                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>{cardNumber.slice(10, 14)}</Text>
-                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>{cardNumber.slice(15, 19)}</Text>
+                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
+                    {cardNumber.slice(5, 9).split('').map((char, index) => isNaN(Number(char)) ? char : '*').join('')}
+                  </Text>
+                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
+                    {cardNumber.slice(10, 14).split('').map((char, index) => isNaN(Number(char)) ? char : '*').join('')}
+                  </Text>
+                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
+                    {isNaN(Number(cardNumber[15])) ? cardNumber[15] : '*'}
+                    {cardNumber.slice(16, 19)}
+                  </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
                   <View
@@ -171,7 +179,7 @@ export default function HomeScreen() {
               </View>
               <Image
                 source={card}
-                style={[{ width: '100%', height: '96%', borderRadius: 15 }]}
+                style={{ width: '100%', height: '96%', borderRadius: 15 }}
               />
             </View>
           </Animated.View>
@@ -253,8 +261,8 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <View style={{ width: '40%', marginTop: 20 }}>
-            <Button title="Submit" color={'#0066ff'} onPress={() => { }} />
+          <View style={{ width: '40%', marginTop: 20, borderRadius: 10, backgroundColor: 'black' }}>
+            <Button title="Submit" color={'transparent'} onPress={() => { }} />
           </View>
         </KeyboardAvoidingView>
 
