@@ -35,7 +35,6 @@ export default function getCardIcon(cardNumber: string) {
   // remove all # from card number
   cardNumber = cardNumber.replace(/#/g, '');
   const cardCompany = cardType(cardNumber);
-  console.log(cardNumber, cardCompany);
 
   switch (cardCompany) {
     case 'visa':

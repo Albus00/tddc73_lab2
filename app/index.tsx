@@ -12,12 +12,14 @@ export default function HomeScreen() {
 
   const [cardNumber, setCardNumber] = useState('#### #### #### ####');
   const [cardName, setCardName] = useState('John Doe');
-  const [cardCVV, setCardCVV] = useState('###');
+  const [cardCVV, setCardCVV] = useState('    ');
 
   const [numberIsFocused, setNumberIsFocused] = useState(false);
   const [nameIsFocused, setNameIsFocused] = useState(false);
   const [dateIsFocused, setDateIsFocused] = useState(false);
   const [cvvIsFocused, setCVVIsFocused] = useState(false);
+
+  const [isAmex, setIsAmex] = useState(false);
 
   const numberInputRef = useRef<TextInput>(null);
   const nameInputRef = useRef<TextInput>(null);
@@ -37,7 +39,9 @@ export default function HomeScreen() {
 
     // If dropdown is focused, manually unfocus all other input fields
     if (fieldName === 'cardDate') {
+      numberInputRef.current != null && numberInputRef.current.blur();
       nameInputRef.current != null && nameInputRef.current.blur();
+      ccvInputRef.current != null && ccvInputRef.current.blur();
     }
 
     // Focus on the selected field
@@ -63,9 +67,18 @@ export default function HomeScreen() {
     }
   }
 
-  const flipCard = (isCCV: boolean) => {
-    // console.log(isCCV, isFlipped);
+  const checkAmex = (number: string) => {
+    number = number.replace(/#/g, '');
+    let re = new RegExp("^(34|37)");
+    if (number.match(re) != null) {
+      console.log('Amex');
+      setIsAmex(true);
+    } else {
+      setIsAmex(false);
+    }
+  }
 
+  const flipCard = (isCCV: boolean) => {
     if (isCCV === isFlipped) {
       return;
     }
@@ -105,6 +118,9 @@ export default function HomeScreen() {
   const changeNumber = (text: string) => {
     let newText = text;
 
+    // Remove all non-numeric characters
+    newText = newText.replace(/\D/g, '');
+
     if (text.length > 19) {
       newText = text.slice(0, 19);
     }
@@ -119,12 +135,15 @@ export default function HomeScreen() {
   const changeCVV = (text: string) => {
     let newText = text;
 
-    if (text.length > 3) {
-      newText = text.slice(0, 3);
+    // Remove all non-numeric characters
+    newText = newText.replace(/\D/g, '');
+
+    if (text.length > 4) {
+      newText = text.slice(0, 4);
     }
 
-    while (newText.length < 3) {
-      newText += '#';
+    while (newText.length < 4) {
+      newText += ' ';
     }
 
     setCardCVV(newText);
@@ -143,22 +162,37 @@ export default function HomeScreen() {
                 </View>
                 <View
                   style={[
-                    { marginTop: 0, flexDirection: 'row', gap: 5, },
                     styles.cardDetailsEntry,
                     numberIsFocused && styles.focused
                   ]}
                 >
-                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>{cardNumber.slice(0, 4)}</Text>
-                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
-                    {cardNumber.slice(5, 9).split('').map((char, index) => isNaN(Number(char)) ? char : '*').join('')}
-                  </Text>
-                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
-                    {cardNumber.slice(10, 14).split('').map((char, index) => isNaN(Number(char)) ? char : '*').join('')}
-                  </Text>
-                  <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
-                    {isNaN(Number(cardNumber[15])) ? cardNumber[15] : '*'}
-                    {cardNumber.slice(16, 19)}
-                  </Text>
+                  {isAmex ? (
+                    <View style={{ flexDirection: 'row', gap: 5 }}>
+                      <Text style={[styles.cardDetailsText, styles.cardNumberText]}>{cardNumber.slice(0, 4)}</Text>
+                      <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
+                        {cardNumber.slice(5, 11).split('').map((char, index) => isNaN(Number(char)) ? char : '*').join('')}
+                      </Text>
+                      <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
+                        {isNaN(Number(cardNumber[12])) ? cardNumber[12] : '*'}
+                        {cardNumber.slice(13, 16)}
+                      </Text>
+                    </View>
+                  ) : (
+                    <View style={{ flexDirection: 'row', gap: 5 }}>
+                      <Text style={[styles.cardDetailsText, styles.cardNumberText]}>{cardNumber.slice(0, 4)}</Text>
+                      <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
+                        {cardNumber.slice(5, 9).split('').map((char, index) => isNaN(Number(char)) ? char : '*').join('')}
+                      </Text>
+                      <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
+                        {cardNumber.slice(10, 14).split('').map((char, index) => isNaN(Number(char)) ? char : '*').join('')}
+                      </Text>
+                      <Text style={[styles.cardDetailsText, styles.cardNumberText]}>
+                        {isNaN(Number(cardNumber[15])) ? cardNumber[15] : '*'}
+                        {cardNumber.slice(16, 19)}
+                      </Text>
+                    </View>
+                  )}
+
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
                   <View
@@ -171,7 +205,7 @@ export default function HomeScreen() {
                     <Text style={styles.label}>Card name</Text>
                     <Text style={styles.cardDetailsText}>{cardName}</Text>
                   </View>
-                  <View style={[{ flexDirection: 'column', justifyContent: 'flex-start' }, dateIsFocused && styles.focused]}>
+                  <View style={[{ flexDirection: 'column', justifyContent: 'flex-start', paddingHorizontal: 5 }, dateIsFocused && styles.focused]}>
                     <Text style={styles.label}>Expires</Text>
                     <Text style={styles.cardDetailsText}>{month}/{year}</Text>
                   </View>
@@ -192,20 +226,24 @@ export default function HomeScreen() {
           >
             <View style={[styles.centered, styles.card]}>
               <View id='cardCVV' style={styles.cardDetailsContainer}>
-                <Text
-                  style={[
-                    styles.cardDetailsText,
-                    styles.cardDetailsEntry,
-                    { marginTop: 20 },
-                    cvvIsFocused && styles.focused
-                  ]}
+                <View
+                  style={{ height: 40, width: '100%', backgroundColor: 'white', marginVertical: 'auto', borderRadius: 10, paddingRight: 5 }}
                 >
-                  CVV: {cardCVV}
-                </Text>
+                  <Text
+                    style={[
+                      styles.cardDetailsText,
+                      styles.cardDetailsEntry,
+                      { marginVertical: 'auto', textAlign: 'right', color: 'black', alignSelf: 'flex-end' },
+                      cvvIsFocused && styles.focused
+                    ]}
+                  >
+                    CVV: {cardCVV.split('').map((char) => char == ' ' ? char : '*').join('')}
+                  </Text>
+                </View>
               </View>
               <Image
                 source={card}
-                style={[{ width: '100%', height: '96%', borderRadius: 15 }]}
+                style={[{ width: '100%', height: '96%', borderRadius: 15, transform: [{ scaleX: -1 }] }]}
               />
             </View>
           </Animated.View>
@@ -231,17 +269,30 @@ export default function HomeScreen() {
               placeholder="1234 5678 9012 3456"
               keyboardType="numeric"
               maxLength={19}
-              onChangeText={(text) => changeNumber(text)}
+              onChangeText={(text) => { changeNumber(text); checkAmex(text) }}
               onFocus={() => focusField('cardNumber')}
             />
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', gap: '15' }}>
               <View style={{ width: '60%' }}>
                 <Text style={styles.label}>Expiration Date</Text>
-                <TouchableOpacity style={{ flexDirection: 'row', width: '50%', gap: '5' }} activeOpacity={1.0} onPress={() => focusField('cardDate')}>
+                <TouchableOpacity
+                  style={{ flexDirection: 'row', width: '50%', gap: '5' }}
+                  onPress={() => focusField('cardDate')}
+                >
                   {/* Dropdown component needs to be at 50% for some reason? */}
-                  <Dropdown valueArray={["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]} placeholder="MM" values={month} setValues={setMonth} onFocus={() => focusField('cardDate')} />
-                  <Dropdown valueArray={["24", "25", "26", "27", "28"]} placeholder="YY" values={year} setValues={setYear} onFocus={() => focusField('cardDate')} />
+                  <Dropdown
+                    valueArray={["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]}
+                    placeholder="MM" values={month} setValues={setMonth}
+                    onFocus={() => focusField('cardDate')}
+                  />
+                  <Dropdown
+                    valueArray={["24", "25", "26", "27", "28"]}
+                    placeholder="YY"
+                    values={year}
+                    setValues={setYear}
+                    onFocus={() => focusField('cardDate')}
+                  />
                 </TouchableOpacity>
               </View>
 
@@ -250,18 +301,18 @@ export default function HomeScreen() {
                 <TextInput
                   ref={ccvInputRef}
                   style={styles.input}
-                  placeholder="123"
+                  placeholder="1234"
                   keyboardType="numeric"
                   secureTextEntry={true}
                   onChangeText={(text) => changeCVV(text)}
                   onFocus={() => focusField('cardCVV')}
-                  maxLength={3}
+                  maxLength={4}
                 />
               </View>
             </View>
           </View>
 
-          <View style={{ width: '40%', marginTop: 20, borderRadius: 10, backgroundColor: 'black' }}>
+          <View style={{ width: '40%', marginTop: 20, borderRadius: 10, backgroundColor: 'black', zIndex: 5 }}>
             <Button title="Submit" color={'transparent'} onPress={() => { }} />
           </View>
         </KeyboardAvoidingView>
